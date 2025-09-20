@@ -82,7 +82,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
     const fullnumber = `${prefix}${phone}`;
     const result = await VerifyOtpFromPhoneNumber(fullnumber, otp);
 
-  
     if (!result.success) throw new ApiError(400, "Invalid OTP");
 
     user.isVerified = true;
@@ -115,7 +114,7 @@ const updateProfile = asyncHandler(async function (req, res) {
 
   const userId = req.user?._id;
   console.log(userId);
-  
+
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -144,4 +143,32 @@ const updateProfile = asyncHandler(async function (req, res) {
     .json(new ApiResponse(200, "User Updated Successfullu ", user));
 });
 
-export { SendOTP, verifyOTP, updateProfile };
+//  logout User
+
+const logout = asyncHandler(async function (req, res) {
+  const userId = req.user._id;
+
+  
+  await User.findByIdAndUpdate(
+    userId,
+    {
+      $unset: { refreshToken: 1 },
+    },
+    { new: true }
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true, // set to true only in production (with HTTPS)
+    sameSite: "strict", // recommended for security
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
+
+export { SendOTP, verifyOTP, updateProfile,logout };
