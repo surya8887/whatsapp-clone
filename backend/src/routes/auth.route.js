@@ -19,6 +19,6 @@ router
   .route("/update-profile")
   .put(verifyJWT, upload.single("profilePicture"), updateProfile);
 
-router.route("/logout").get(verifyJWT, logout);
+router.route("/logout").get(logout);
 
 export default router;
