@@ -146,16 +146,17 @@ const updateProfile = asyncHandler(async function (req, res) {
 //  logout User
 
 const logout = asyncHandler(async function (req, res) {
-  const userId = req.user._id;
+
+  // const userId = req.user._id;
 
   
-  await User.findByIdAndUpdate(
-    userId,
-    {
-      $unset: { refreshToken: 1 },
-    },
-    { new: true }
-  );
+  // await User.findByIdAndUpdate(
+  //   userId,
+  //   {
+  //     $unset: { refreshToken: 1 },
+  //   },
+  //   { new: true }
+  // );
 
   const options = {
     httpOnly: true,
