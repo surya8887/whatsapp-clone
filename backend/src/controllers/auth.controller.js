@@ -10,7 +10,8 @@ import {
 } from "../services/twilloService.js";
 import { generateToken, setTokenCookies } from "../utils/generateToken.js";
 import { uploadOnCloudinary } from "../config/cloudinaryConfig.js";
-// Send OTP ===>
+
+// <=================Send OTP =============>
 
 const SendOTP = asyncHandler(async (req, res) => {
   const { phone, prefix, email } = req.body;
@@ -81,7 +82,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
     const fullnumber = `${prefix}${phone}`;
     const result = await VerifyOtpFromPhoneNumber(fullnumber, otp);
 
-    // ✅ No need to check result.status — service already throws error if invalid
+  
     if (!result.success) throw new ApiError(400, "Invalid OTP");
 
     user.isVerified = true;
@@ -112,7 +113,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
 const updateProfile = asyncHandler(async function (req, res) {
   const { profilePicture, agreed, about, username } = req.body; // ✅ Destructure username too
 
-  const userId = req.user?.userId;
+  const userId = req.user?._id;
+  console.log(userId);
+  
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -141,4 +144,4 @@ const updateProfile = asyncHandler(async function (req, res) {
     .json(new ApiResponse(200, "User Updated Successfullu ", user));
 });
 
-export { SendOTP, verifyOTP,updateProfile };
+export { SendOTP, verifyOTP, updateProfile };
