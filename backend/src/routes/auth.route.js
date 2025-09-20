@@ -3,6 +3,7 @@ import {
   SendOTP,
   verifyOTP,
   updateProfile,
+  logout,
 } from "../controllers/auth.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -17,5 +18,7 @@ router.route("/verify").post(verifyOTP);
 router
   .route("/update-profile")
   .put(verifyJWT, upload.single("profilePicture"), updateProfile);
+
+router.route("/logout").get(verifyJWT, logout);
 
 export default router;
