@@ -31,11 +31,11 @@ const userSchema = new Schema(
     },
     emailOtp: {
       type: String,
-      select: false,
+      // select: false,
     },
     emailOtpExpire: {
       type: Date,
-      select: false,
+      // select: false,
     },
     profilePicture: {
       type: String,
@@ -69,7 +69,6 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-
 
 userSchema.methods.generateAccessToken = function () {
   if (!process.env.ACCESS_TOKEN_SECRET) {

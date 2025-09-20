@@ -80,30 +80,30 @@ const verifyOTP = asyncHandler(async (req, res) => {
     const fullnumber = `${prefix}${phone}`;
     const result = await VerifyOtpFromPhoneNumber(fullnumber, otp);
 
-    if (result.status !== "approved") throw new ApiError(400, "Invalid OTP");
+    // ✅ No need to check result.status — service already throws error if invalid
+    if (!result.success) throw new ApiError(400, "Invalid OTP");
 
     user.isVerified = true;
     await user.save();
   }
 
-  if (!user) throw new ApiError(400, "Either email or phone+prefix are required");
+  if (!user)
+    throw new ApiError(400, "Either email or phone+prefix are required");
 
   // ✅ Generate tokens AFTER successful verification
   const { accessToken, refreshToken } = await generateToken(user._id);
   setTokenCookies(res, accessToken, refreshToken);
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, "User verified successfully", {
-        user: {
-          _id: user._id,
-          email: user.email,
-          phone: user.phone,
-          isVerified: user.isVerified,
-        },
-      })
-    );
+  return res.status(200).json(
+    new ApiResponse(200, "User verified successfully", {
+      user: {
+        _id: user._id,
+        email: user.email,
+        phone: user.phone,
+        isVerified: user.isVerified,
+      },
+    })
+  );
 });
 
 export { SendOTP, verifyOTP };

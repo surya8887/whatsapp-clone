@@ -6,3 +6,4 @@ router.route("/send").post(SendOTP);
 router.route("/verify").post(verifyOTP);
 
 export default router;
+

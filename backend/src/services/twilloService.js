@@ -11,12 +11,13 @@ const SendOtpToPhoneNumber = async (phone) => {
   try {
     if (!phone) throw new ApiError(400, "Phone number is required");
 
+    console.log(`Using Twilio Service SID: ${serviceSid}`);
     console.log(`Sending OTP to phone ending with ${phone.slice(-4)}`);
 
     const response = await client.verify.v2
       .services(serviceSid)
       .verifications.create({
-        to: phone, // must be E.164 format
+        to: phone,
         channel: "sms",
       });
 
@@ -34,8 +35,11 @@ const SendOtpToPhoneNumber = async (phone) => {
 
 const VerifyOtpFromPhoneNumber = async (phone, code) => {
   try {
+    console.log(phone,code);
+    
     if (!phone || !code) throw new ApiError(400, "Phone and OTP code are required");
 
+    console.log(`Using Twilio Service SID: ${serviceSid}`);
     console.log(`Verifying OTP for phone ending with ${phone.slice(-4)}`);
 
     const response = await client.verify.v2
