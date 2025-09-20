@@ -9,8 +9,9 @@ import {
   VerifyOtpFromPhoneNumber,
 } from "../services/twilloService.js";
 import { generateToken, setTokenCookies } from "../utils/generateToken.js";
-
+import { uploadOnCloudinary } from "../config/cloudinaryConfig.js";
 // Send OTP ===>
+
 const SendOTP = asyncHandler(async (req, res) => {
   const { phone, prefix, email } = req.body;
   const otp = generateOtp();
@@ -106,4 +107,38 @@ const verifyOTP = asyncHandler(async (req, res) => {
   );
 });
 
-export { SendOTP, verifyOTP };
+//  <=================== Update Profile  ==============>
+
+const updateProfile = asyncHandler(async function (req, res) {
+  const { profilePicture, agreed, about, username } = req.body; // ✅ Destructure username too
+
+  const userId = req.user?.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // ✅ Handle profile picture upload
+  if (req.file) {
+    const uploadResult = await uploadOnCloudinary(req.file);
+    if (!uploadResult?.secure_url) {
+      throw new ApiError(500, "Failed to upload profile picture");
+    }
+    user.profilePicture = uploadResult.secure_url; // ✅ Use uploadResult not updateProfile
+  } else if (profilePicture) {
+    user.profilePicture = profilePicture;
+  }
+
+  // ✅ Update other fields safely
+  if (username) user.username = username;
+  if (agreed) user.agreed = agreed; // ✅ Fixed typo (agredd)
+  if (about) user.about = about;
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User Updated Successfullu ", user));
+});
+
+export { SendOTP, verifyOTP,updateProfile };
